@@ -6,11 +6,12 @@ from exosense import thpa_const
 exo = ExoSense()
 exo.sound.init()
 exo.light.init()
-exo.thpa.init(gas_heater_temperature=300)
+exo.thpa.init(gas_heater_temperature=300, temp_offset=-5, elevation=100)
 
 def _sample_sound():
     while True:
         exo.sound.sample()
+        time.sleep_ms(5)
 
 def _read_thpa():
     while True:
