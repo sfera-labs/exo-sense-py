@@ -74,7 +74,7 @@ class Sound:
                     self._peak_ts = t
 
     def avg(self):
-        return self._avg_ret
+        return self._avg_val
 
     def peak(self):
         return int(self._peak_ret)
