@@ -13,15 +13,11 @@ def _sample_sound():
         exo.sound.sample()
         time.sleep_ms(5)
 
-def _read_thpa():
-    while True:
-        exo.thpa.read()
-        time.sleep(1)
-
 _thread.start_new_thread(_sample_sound, ())
-_thread.start_new_thread(_read_thpa, ())
 
 while True:
+    exo.thpa.read()
+
     print("================")
     print(exo.sound.read())
     print(exo.sound.peak())
@@ -34,9 +30,11 @@ while True:
     print(exo.thpa.humidity())
     print(exo.thpa.pressure())
     print(exo.thpa.gas_resistance())
+    print(exo.thpa.iaq())
+    print(exo.thpa.iaq_trend())
 
     print(exo.DI1())
     exo.DO1.toggle()
     print(exo.DO1())
 
-    time.sleep(1)
+    time.sleep(2)
