@@ -7,6 +7,7 @@ import math
 from .opt3001 import OPT3001
 from . import bme680
 from .bme680 import constants as thpa_const
+from .mcp79410 import MCP79410
 
 class ExoPin:
     def __init__(self, id, pin, mode, pull=None):
@@ -83,6 +84,7 @@ class Light(OPT3001):
     def __init__(self, exo, addr):
         super().__init__()
         self._exo = exo
+        self._addr = addr
 
     def init(self, range_number=0b1100, conversion_time=0b1,
             mode_of_conversion_operation=0b10, latch=0b1, polariy=0b0,
@@ -91,6 +93,16 @@ class Light(OPT3001):
         super().configure(range_number, conversion_time,
                 mode_of_conversion_operation, latch, polariy,
                 mask_exponent, fault_count)
+
+class RTC(MCP79410):
+    def __init__(self, exo, addr):
+        super().__init__()
+        self._exo = exo
+        self._addr = addr
+
+    def init(self, control=0x80, osctrim=0x47):
+        super().init(self._exo._getI2C(), self._addr)
+        super().configure(control, osctrim)
 
 class THPA:
     def __init__(self, exo, addr):
@@ -230,7 +242,7 @@ class I2CWrap(I2C):
         return self.writeto_mem(addr, register, data)
 
 class ExoSense:
-    def __init__(self):
+    def __init__(self, rtc=False):
         self.PIN_DI1 = 'P18'
         self.PIN_DI2 = 'P17'
         self.PIN_TTL1 = 'P20'
@@ -252,6 +264,8 @@ class ExoSense:
         self.sound = Sound(self.PIN_MIC)
         self.light = Light(self, 0x44)
         self.thpa = THPA(self, 0x77)
+        if rtc:
+            self.rtc = RTC(self, 0x6f)
 
         Pin(self.PIN_TX, mode=Pin.OUT)
         Pin(self.PIN_RX, mode=Pin.IN, pull=None)
